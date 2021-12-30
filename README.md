@@ -1,4 +1,4 @@
-# PZEM004tV3_Wattmeter_ArduinoProMini5v
+# PZEM004tV3_Wattmeter_ArduinoProMini328p5v
 
 Ordinary pzem004t v3.0 interface with promini-328-16MHz with modified energy counter reset.  
 This will usefull if you are uploading or having another device connected to tx and rx pin of promini (I always upload sketch with USBtoTTL which using tx and rx pin, so using hardware serial is not an option).  
