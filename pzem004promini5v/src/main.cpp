@@ -4,7 +4,7 @@
 #include <Debounce.h>
 #include <EEPROM.h>
 #include <PZEM004Tv30.h>
-PZEM004Tv30 pzem(12, 13, 0x01);     //tx,rx, slaveaddr pzem004
+PZEM004Tv30 pzem(12, 13, 0x01);     //tx,rx, slaveaddr
 LiquidCrystal_I2C lcd(0x27, 20, 4); // set the LCD address to 0x27 for a 16 chars and 2 line display
 byte bt1 = 2;
 byte bt2 = 3;
@@ -14,7 +14,7 @@ volatile int bts1 = 0;
 volatile int bts2 = 0;
 int menu = 0;
 float eepval = 0;
-int eepaddr = 0;
+int eepaddr = 0; //eepromaddress
 float whprev;
 
 void btn1_ISR();
@@ -66,11 +66,6 @@ void btn2_ISR()
   if (bts2 == LOW)
   {
     resetenergi();
-    //menu--;
-    //if (menu < 0)
-    //{
-    //  menu = 7;
-    //}
   }
 }
 
