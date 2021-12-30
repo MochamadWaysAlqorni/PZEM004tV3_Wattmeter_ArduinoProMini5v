@@ -4,7 +4,7 @@
 #include <Debounce.h>
 #include <EEPROM.h>
 #include <PZEM004Tv30.h>
-PZEM004Tv30 pzem(12, 13, 0x01);     //tx,rx, slaveaddr
+PZEM004Tv30 pzem(12, 13, 0x01);     //tx,rx, slaveaddr pzem004
 LiquidCrystal_I2C lcd(0x27, 20, 4); // set the LCD address to 0x27 for a 16 chars and 2 line display
 byte bt1 = 2;
 byte bt2 = 3;
@@ -14,7 +14,7 @@ volatile int bts1 = 0;
 volatile int bts2 = 0;
 int menu = 0;
 float eepval = 0;
-int eepaddr = 0; //eepromaddress
+int eepaddr = 0;
 float whprev;
 
 void btn1_ISR();
@@ -28,6 +28,7 @@ void powerapp();
 void pf();
 void energi();
 void resetenergi();
+void tagihan();
 void (*resetmcu)(void) = 0;
 
 void setup()
@@ -35,7 +36,6 @@ void setup()
   lcd.init();
   lcd.backlight();
   Serial.begin(115200);
-  //pzem.setAddress(0x01);
   pinMode(bt1, INPUT_PULLUP);
   pinMode(bt2, INPUT_PULLUP);
   attachInterrupt(0, btn1_ISR, RISING);
@@ -53,7 +53,7 @@ void btn1_ISR()
   if (bts1 == LOW)
   {
     menu++;
-    if (menu > 7)
+    if (menu > 8)
     {
       menu = 0;
     }
@@ -152,14 +152,29 @@ void energi()
   lcd.setCursor(0, 0);
   lcd.print("Energi (Wh)");
   lcd.setCursor(0, 1);
-  lcd.print(wh,0);
+  lcd.print(wh, 0);
 }
 
 void resetenergi()
 {
   whprev = pzem.energy() * 1000;
   EEPROM.put(eepaddr, whprev);
-  delay(500);
+  delay(100);
+}
+
+void tagihan()
+{
+  float whcurr = pzem.energy() * 1000;
+  EEPROM.get(eepaddr, eepval);
+  float wh = whcurr - eepval;
+  float bill = ((wh / 1000) * 1444.7); //1444.70 is bill per kWh, adjust if needed
+  lcd.clear();
+  lcd.setCursor(0, 0);
+  lcd.print("Tagihan (IDR)");
+  lcd.setCursor(0, 1);
+  lcd.print("Rp.");
+  lcd.setCursor(3, 1);
+  lcd.print(bill,2);
 }
 
 void loop()
@@ -189,6 +204,9 @@ void loop()
     break;
   case 7:
     energi();
+    break;
+  case 8:
+    tagihan();
     break;
   default:
     tegangan();
